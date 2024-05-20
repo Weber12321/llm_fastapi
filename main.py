@@ -12,8 +12,8 @@ model = LLMModel(
 )
 
 @app.get("/model")
-def read_root():
-    return {"Hello": "World"}
+def get_model_info():
+    return model.get_current_model_info()
 
 @app.post("/infer")
 def inference(prompt: str):
