@@ -2,7 +2,16 @@ import settings
 from typing import Union
 
 from fastapi import FastAPI
+from pydantic import BaseModel
 from models.llm import LLMModel
+
+
+class ModelInfo(BaseModel):
+    model_name: str
+    model_param: dict
+
+class Prompt(BaseModel):
+    prompt: str
 
 app = FastAPI()
 
@@ -16,12 +25,13 @@ def get_model_info():
     return model.get_current_model_info()
 
 @app.post("/infer")
-def inference(prompt: str):
-    return model.generate_text(prompt)
+def inference(prompt: Prompt):
+    return model.generate_text(prompt.prompt)
 
 @app.post("/switch_model")
-def switch_model(model_name: str):
-    model_name = model_name.upper()
+def switch_model(model_info: ModelInfo):
+    model_name = model_info.model_name.upper()
+    model_param = model_info.model_param
     if not model_name in settings.MODEL_CONFIG:
         raise ValueError(f"Model {model_name} not found in settings")
     model.reload_model(
