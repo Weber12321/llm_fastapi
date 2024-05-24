@@ -4,3 +4,7 @@ MODEL_CONFIG = {
         "model_config": {"param":{}}
     },
 }
+
+
+
+TRAIN_LOCK = {}
