@@ -1,46 +1,4 @@
-import logging
 import time
-from settings import TRAIN_LOCK
-
-
-def start_task():
-    """
-    Start training
-    """
-    logging.info("Starting training")
-    time.sleep(15)
-    return {"message": "Training is finished"}
-
-
-def check_lock():
-    """
-    Check if the task is locked
-    """
-    global TRAIN_LOCK
-
-    time.sleep(1)
-    return TRAIN_LOCK.get('lock', False)
-
-
-def task():
-    """
-    Start training
-    """
-    global TRAIN_LOCK
-
-    # check if the task is locked
-    if check_lock():
-        return {"message": "Task is locked"} 
-    
-    time.sleep(15)
-    # lock the task
-    TRAIN_LOCK['lock'] = True
-
-    resp = start_task()
-
-    TRAIN_LOCK.pop('lock') 
-
-    return resp
 
 
 class Subject:
@@ -60,6 +18,8 @@ class Subject:
 
 class Observer:
     def __init__(self):
+        # This part can be str or other var to control 
+        # the status of the task.
         self.message = "Task is done"
 
     def update(self, message):
@@ -72,7 +32,12 @@ class Task(Subject):
 
     def run(self):
         self.notify("Task is running")
-        # Run the task here
+
+        # ===========
+        # todo(Weber): Place the code of training the model here.
+        time.sleep(15)
+        # ===========
+
         self.notify("Task is done")
 
 
@@ -83,3 +48,8 @@ class CheckStatus(Observer):
     def check_status(self):
         return {"message": self.message}
 
+
+task = Task()
+check_status = CheckStatus()
+
+task.attach(check_status)
